@@ -1,1 +1,83 @@
+hostname F3-Router
 
+Point-to-Point Serial Interface IP Configuration
+
+
+Router(config)#int se0/2/0
+Router(config-if)#no shutdown
+
+Router(config-if)#int se0/2/1
+Router(config-if)#no shutdown
+
+Router(config-if)#int gig0/0
+Router(config-if)#no shutdown
+
+Router(config-if)#int se0/2/0
+Router(config-if)#clock rate 64000
+
+Router(config-if)#int se0/2/1
+Router(config-if)#clock rate 64000
+
+Router(config-if)#do write
+
+Range 10.10.10.0/30-Range 10.10.10.4/30
+Router(config)#int se0/2/0
+Router(config-if)#ip address 10.10.10.6 255.255.255.252
+
+Router(config-if)#int se0/2/1
+Router(config-if)#ip address 10.10.10.2 255.255.255.252
+Router(config-if)#do write
+
+
+Router Sub-interface Configuration for VLAN Routing
+
+Router(config)#int gig0/0.10
+Router(config-subif)#encapsulation dot1Q 10
+Router(config-subif)#ip address 192.168.1.1 255.255.255.0
+Router(config-subif)#exit
+
+Router(config)#int gig0/0.20
+Router(config-subif)#encapsulation dot1Q 20
+Router(config-subif)#ip address 192.168.2.1 255.255.255.0
+Router(config-subif)#exit
+
+
+
+Router(config-subif)#service dhcp
+
+Router(config)#ip dhcp pool IT
+Router(dhcp-config)#network 192.168.1.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.1.1
+Router(dhcp-config)#dns-server 192.168.1.1
+
+Router(dhcp-config)#ip dhcp pool Admin
+Router(dhcp-config)#network 192.168.2.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.2.1
+Router(dhcp-config)#dns-server 192.168.2.1
+Router(dhcp-config)#exit
+Router(config)#do write
+
+
+Configure OSPF Protocol at 3rd Floor Router
+
+
+Router(config)#router ospf 10
+Router(config-router)#network 10.10.10.0 255.255.255.252 area 0
+Router(config-router)#network 10.10.10.4 255.255.255.252 area 0
+Router(config-router)#network 192.168.1.0 255.255.255.0 area 0
+Router(config-router)#network 192.168.2.0 255.255.255.0 area 0
+Router(config-router)#do write
+
+
+Configure SSH for Remote Login (3rd Floor Router)
+
+Router(config)#hostname F3-Router
+F3-Router(config)#ip domain-name head
+F3-Router(config)#username head password head
+F3-Router(config)#crypto key generate rsa
+How many bits in the modulus [512]: 1024
+
+F3-Router(config)#line vty 0 15
+F3-Router(config-line)#login local
+F3-Router(config-line)#transport input ssh
+F3-Router(config-line)#do write
