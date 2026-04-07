@@ -209,5 +209,5 @@ hotel-network-design/
 
 ## 👨‍💻 Author
 
-**Muhammad Muhammad**
+**Muhammad Umair**
 Cybersecurity & Networking Learner
