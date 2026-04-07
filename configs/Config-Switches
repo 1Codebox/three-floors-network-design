@@ -1,1 +1,63 @@
+1st Floor Switch:
+
+Switch(config)#int range fa0/2-3
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 80
+
+Switch(config-if-range)#int range fa0/4-5
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 70
+
+Switch(config-if-range)#int range fa0/6-8
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 60
+
+Switch(config-if-range)#int range fa0/1
+Switch(config-if-range)#switchport mode trunk
+Switch(config-if-range)#do write
+
+
+2nd Floor Switch:
+
+Switch(config)#int range fa0/2-3
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 50
+	
+Switch(config-if-range)#int range fa0/4-5
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 40
+
+Switch(config-if-range)#int range fa0/6-8
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 30
+
+Switch(config-if-range)#int fa0/1
+Switch(config-if)#switchport mode trunk
+
+Switch(config-if)#do write
+
+
+3rd Floor Switch:
+
+Switch(config)#int range fa0/2-3
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 10
+
+Switch(config-if-range)#int range fa0/4-6
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 20
+
+Switch(config-if-range)#int fa0/1
+Switch(config-if)#switchport mode trunk
+
+Switch(config-if)#do write
+
+
+Configure Port Security to IT department switch
+Switch(config)#int fa0/2
+Switch(config-if)#switchport port-security
+Switch(config-if)#switchport port-security maximum 1
+Switch(config-if)#switchport port-security mac-address sticky
+Switch(config-if)#switchport port-security violation shutdown
+Switch(config-if)#do write
 
