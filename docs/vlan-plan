@@ -1,1 +1,14 @@
+# VLAN Plan
 
+Each department is isolated using VLANs for security and traffic management.
+
+- VLAN 10 → IT
+- VLAN 20 → Admin
+- VLAN 30 → Sales
+- VLAN 40 → HR
+- VLAN 50 → Finance
+- VLAN 60 → Logistics
+- VLAN 70 → Store
+- VLAN 80 → Reception
+
+Inter-VLAN routing is handled using Router-on-a-Stick.
