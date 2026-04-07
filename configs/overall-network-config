@@ -1,1 +1,310 @@
+##Complete network configuration commands##
 
+Modern hotel/office network model. the hotel has three floors; in 
+the first floor there three departments(Reception, store, logistics), 
+in the second floor there are three departments (finance, HR, sales/marketing), 
+while in the third floor hosts the IT and Admin.
+Therefore, the following are part of the consideration during the design and implementation.	 
+
+
+1. 3 2911 routers for f1, f2, f3 with serial cables
+2. All routers connected with each other with DCE cables
+3. Network b/w the routers is 10.10.10.0/30, 10.10.10.4/30, 10.10.10.8/30 
+4. Each floor is expected to have one switch
+5. Each floor is expected to have WIFI network connected to laptops and phones
+6. Each department is expected to have a printer
+7. Each department is expected to be in different VLAN with the following details:
+
+1st Floor:
+Reception- VLAN 80, Network of 192.168.8.0/24
+Store- 	   VLAN 70, Network of 192.168.7.0/24
+Logistics- VLAN 60, Network of 192.168.6.0/24
+
+2nd Floor:
+Finance-   VLAN 50, Network of 192.168.5.0/24
+HR- 	   VLAN 40, Network of 192.168.4.0/24
+Sales-     VLAN 30, Network of 192.168.3.0/24
+
+3rd Floor:
+Admin-     VLAN 20, Network of 192.168.2.0/24
+IT- 	   VLAN 10, Network of 192.168.1.0/24
+
+8. Use OSFP as the routing protocol to advertise routes
+9. All devices in the network are expected to obtain IP address dynamically with their respective router configured as DHCP server
+10. All the devices in the network are expected to communicate with each other
+11. Configure SSH in all routers for remote login.
+12. in IT department, add PC called Test-PC to port fa0/1 and use it to test remote login
+13. Configure port security to IT-dept switch to allow only Test-PC to access port fa0/1 
+(Use sticky method to obtain mac-address with violation mode of shutdown).
+
+
+3rd Floor Router:
+Router(config)#int se0/2/0
+Router(config-if)#no shutdown
+
+Router(config-if)#int se0/2/1
+Router(config-if)#no shutdown
+
+Router(config-if)#int gig0/0
+Router(config-if)#no shutdown
+
+Router(config-if)#int se0/2/0
+Router(config-if)#clock rate 64000 
+
+Router(config-if)#int se0/2/1
+Router(config-if)#clock rate 64000 
+
+Router(config-if)#do write
+
+Range 10.10.10.0/30-Range 10.10.10.4/30
+Router(config)#int se0/2/0
+Router(config-if)#ip address 10.10.10.6 255.255.255.252
+
+Router(config-if)#int se0/2/1
+Router(config-if)#ip address 10.10.10.2 255.255.255.252
+Router(config-if)#do write
+
+1st Floor Router:
+Router(config)#int se0/2/0
+Router(config-if)#no shutdown
+
+Router(config-if)#int se0/2/1
+Router(config-if)#no shutdown
+
+Router(config-if)#int gig0/0
+Router(config-if)#no shutdown
+
+Range 10.10.10.4/30-Range 10.10.10.8/30
+Router(config)#int se0/2/0
+Router(config-if)#ip address 10.10.10.5 255.255.255.252
+
+Router(config-if)#int se0/2/1
+Router(config-if)#ip address 10.10.10.9 255.255.255.252
+Router(config-if)#do write
+
+2nd Floor Router:
+Router(config)#int se0/2/1
+Router(config-if)#no shutdown
+
+Router(config-if)#int se0/2/0
+Router(config-if)#no shutdown
+
+Router(config-if)#int gig0/0
+Router(config-if)#no shutdown
+
+Router(config-if)#do write
+
+Router(config)#int se0/2/1
+Router(config-if)#clock rate 64000
+Router(config-if)#do write
+
+Range 10.10.10.0/30-Range 10.10.10.8/30
+Router(config-if)#int se0/2/0
+Router(config-if)#ip address 10.10.10.1 255.255.255.252
+
+Router(config-if)#int se0/2/1
+Router(config-if)#ip address 10.10.10.10 255.255.255.252
+Router(config-if)#do write
+
+
+1st Floor Switch:
+Switch(config)#int range fa0/2-3
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 80
+
+Switch(config-if-range)#int range fa0/4-5
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 70
+
+Switch(config-if-range)#int range fa0/6-8
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 60
+
+Switch(config-if-range)#int range fa0/1
+Switch(config-if-range)#switchport mode trunk
+Switch(config-if-range)#do write
+
+2nd Floor Switch:
+Switch(config)#int range fa0/2-3
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 50
+	
+Switch(config-if-range)#int range fa0/4-5
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 40
+
+Switch(config-if-range)#int range fa0/6-8
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 30
+
+Switch(config-if-range)#int fa0/1
+Switch(config-if)#switchport mode trunk
+
+Switch(config-if)#do write
+
+3rd Floor Switch:
+Switch(config)#int range fa0/2-3
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 10
+
+Switch(config-if-range)#int range fa0/4-6
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 20
+
+Switch(config-if-range)#int fa0/1
+Switch(config-if)#switchport mode trunk
+
+Switch(config-if)#do write
+
+
+
+Subnetting Practice 
+10.10.10.4/30
+
+Block size = 4 → ranges increase by 4
+
+Type	    Address
+Network	   10.10.10.4
+Usable	   10.10.10.5
+Usable	   10.10.10.6
+Broadcast  10.10.10.7
+
+Key takeaway
+10.10.10.4 is the network address, not a usable host IP
+Only 2 usable IPs → ideal for point-to-point links (like between two routers)
+
+
+Configure sub-interface with VLAN tagging and DHCP server at 1st floor router
+
+1st Floor Router
+Router(config)#int gig0/0.80
+Router(config-subif)#encapsulation dot1Q 80
+Router(config-subif)#ip address 192.168.8.1 255.255.255.0
+Router(config-subif)#exit 
+
+Router(config)#int gig0/0.70
+Router(config-subif)#encapsulation dot1Q 70
+Router(config-subif)#ip address 192.168.7.1 255.255.255.0
+Router(config-subif)#exit 
+
+Router(config)#int gig0/0.60
+Router(config-subif)#encapsulation dot1Q 60
+Router(config-subif)#ip address 192.168.6.1 255.255.255.0
+Router(config-subif)#do write
+
+DHCP server:
+Router(config)#service dhcp
+
+Router(config)#ip dhcp pool Reception
+Router(dhcp-config)#network 192.168.8.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.8.1
+Router(dhcp-config)#dns-server 192.168.8.1
+Router(dhcp-config)#exit
+
+Router(config)#ip dhcp pool Store
+Router(dhcp-config)#network 192.168.7.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.7.1
+Router(dhcp-config)#dns-server 192.168.7.1
+Router(dhcp-config)#exit
+
+Router(config)#ip dhcp pool Logistics
+Router(dhcp-config)#network 192.168.6.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.6.1
+Router(dhcp-config)#dns-server 192.168.6.1
+Router(dhcp-config)#exit
+
+Router(config)#do write
+
+Configure sub-interface with VLAN tagging and DHCP server at 2st floor router
+
+2st Floor Router
+Router(config)#int gig0/0.50
+Router(config-subif)#encapsulation dot1Q 50
+Router(config-subif)#ip address 192.168.5.1 255.255.255.0
+Router(config-subif)#exit
+
+Router(config)#int gig0/0.40
+Router(config-subif)#encapsulation dot1Q 40
+Router(config-subif)#ip address 192.168.4.1 255.255.255.0
+Router(config-subif)#exit
+
+Router(config)#int gig0/0.30
+Router(config-subif)#encapsulation dot1Q 30
+Router(config-subif)#ip address 192.168.3.1 255.255.255.0
+Router(config-subif)#exit
+
+
+Router(config)#service dhcp
+Router(config)#ip dhcp pool Finance
+Router(dhcp-config)#network 192.168.5.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.5.1
+Router(dhcp-config)#dns-server 192.168.5.1
+Router(dhcp-config)#exit
+
+Router(config)#ip dhcp pool HR
+Router(dhcp-config)#network 192.168.4.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.4.1
+Router(dhcp-config)#dns-server 192.168.4.1
+
+Router(dhcp-config)#ip dhcp pool Sales
+Router(dhcp-config)#network 192.168.3.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.3.1
+Router(dhcp-config)#dns-server 192.168.3.1
+Router(dhcp-config)#exit
+Router(config)#do write
+
+Configure sub-interface with VLAN tagging and DHCP server at 3rd floor router
+
+3rd Floor Router
+Router(config)#int gig0/0.10
+Router(config-subif)#encapsulation dot1Q 10
+Router(config-subif)#ip address 192.168.1.1 255.255.255.0
+Router(config-subif)#exit
+
+Router(config)#int gig0/0.20
+Router(config-subif)#encapsulation dot1Q 20
+Router(config-subif)#ip address 192.168.2.1 255.255.255.0
+Router(config-subif)#exit
+
+Router(config-subif)#service dhcp
+
+Router(config)#ip dhcp pool IT
+Router(dhcp-config)#network 192.168.1.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.1.1
+Router(dhcp-config)#dns-server 192.168.1.1
+
+Router(dhcp-config)#ip dhcp pool Admin
+Router(dhcp-config)#network 192.168.2.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.2.1
+Router(dhcp-config)#dns-server 192.168.2.1
+Router(dhcp-config)#exit
+Router(config)#do write
+
+Configure OSPF Protocol at 1st Floor Router
+As we have to advertise to 5 networks
+
+Router(config)#router ospf 10
+Router(config-router)#network 10.10.10.4 255.255.255.252 area 0
+Router(config-router)#network 10.10.10.8 255.255.255.252 area 0
+Router(config-router)#network 192.168.8.0 255.255.255.0 area 0
+Router(config-router)#network 192.168.7.0 255.255.255.0 area 0
+Router(config-router)#network 192.168.6.0 255.255.255.0 area 0
+Router(config-router)#do write
+
+
+Configure OSPF Protocol at 2nd Floor Router
+Router(config)#router ospf 10
+Router(config-router)#network 10.10.10.0 255.255.255.252 area 0
+Router(config-router)#network 10.10.10.8 255.255.255.252 area 0
+Router(config-router)#network 192.168.3.0 255.255.255.252 area 0
+Router(config-router)#network 192.168.4.0 255.255.255.252 area 0
+Router(config-router)#network 192.168.5.0 255.255.255.252 area 0
+Router(config-router)#do write
+
+Configure OSPF Protocol at 3rd Floor Router
+Router(config)#router ospf 10
+Router(config-router)#network 10.10.10.0 255.255.255.252 area 0
+Router(config-router)#network 10.10.10.4 255.255.255.252 area 0
+Router(config-router)#network 192.168.1.0 255.255.255.0 area 0
+Router(config-router)#network 192.168.2.0 255.255.255.0 area 0
+Router(config-router)#do write
