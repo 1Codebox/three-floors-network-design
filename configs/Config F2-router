@@ -1,1 +1,89 @@
+hostname F2-Router
 
+Point-to-Point Serial Interface IP Configuration
+
+Router(config)#int se0/2/1
+Router(config-if)#no shutdown
+
+Router(config-if)#int se0/2/0
+Router(config-if)#no shutdown
+
+Router(config-if)#int gig0/0
+Router(config-if)#no shutdown
+
+Router(config-if)#do write
+
+Router(config)#int se0/2/1
+Router(config-if)#clock rate 64000
+Router(config-if)#do write
+
+Range 10.10.10.0/30-Range 10.10.10.8/30
+Router(config-if)#int se0/2/0
+Router(config-if)#ip address 10.10.10.1 255.255.255.252
+
+Router(config-if)#int se0/2/1
+Router(config-if)#ip address 10.10.10.10 255.255.255.252
+Router(config-if)#do write
+
+
+Router Sub-interface Configuration for VLAN Routing
+
+Router(config)#int gig0/0.50
+Router(config-subif)#encapsulation dot1Q 50
+Router(config-subif)#ip address 192.168.5.1 255.255.255.0
+Router(config-subif)#exit
+
+Router(config)#int gig0/0.40
+Router(config-subif)#encapsulation dot1Q 40
+Router(config-subif)#ip address 192.168.4.1 255.255.255.0
+Router(config-subif)#exit
+
+Router(config)#int gig0/0.30
+Router(config-subif)#encapsulation dot1Q 30
+Router(config-subif)#ip address 192.168.3.1 255.255.255.0
+Router(config-subif)#exit
+
+
+
+Router(config)#service dhcp
+
+Router(config)#ip dhcp pool Finance
+Router(dhcp-config)#network 192.168.5.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.5.1
+Router(dhcp-config)#dns-server 192.168.5.1
+Router(dhcp-config)#exit
+
+Router(config)#ip dhcp pool HR
+Router(dhcp-config)#network 192.168.4.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.4.1
+Router(dhcp-config)#dns-server 192.168.4.1
+
+Router(dhcp-config)#ip dhcp pool Sales
+Router(dhcp-config)#network 192.168.3.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.3.1
+Router(dhcp-config)#dns-server 192.168.3.1
+Router(dhcp-config)#exit
+Router(config)#do write
+
+Configure OSPF Protocol at 2nd Floor Router
+
+Router(config)#router ospf 10
+Router(config-router)#network 10.10.10.0 255.255.255.252 area 0
+Router(config-router)#network 10.10.10.8 255.255.255.252 area 0
+Router(config-router)#network 192.168.3.0 255.255.255.252 area 0
+Router(config-router)#network 192.168.4.0 255.255.255.252 area 0
+Router(config-router)#network 192.168.5.0 255.255.255.252 area 0
+Router(config-router)#do write
+
+Configure SSH for Remote Login (2nd Floor Router)
+
+Router(config)#hostname F2-Router
+F2-Router(config)#ip domain-name head
+F2-Router(config)#username head password head
+F2-Router(config)#crypto key generate rsa
+How many bits in the modulus [512]: 1024
+
+F2-Router(config)#line vty 0 15
+F2-Router(config-line)#login local
+F2-Router(config-line)#transport input ssh
+F2-Router(config-line)#do write
