@@ -1,1 +1,20 @@
+# OSPF Explanation
 
+OSPF (Open Shortest Path First) is used as the routing protocol.
+
+- Process ID: 10
+- Area: 0 (Backbone)
+
+## Why OSPF?
+- Fast convergence
+- Scalable
+- Industry standard
+
+## How it works:
+- Routers share routes with neighbors
+- Each router builds a routing table
+- Best path selected using cost
+
+## Networks Advertised:
+- Router interconnections (10.10.10.x)
+- All VLAN networks (192.168.x.x)
